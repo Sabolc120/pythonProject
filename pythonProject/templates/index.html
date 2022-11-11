@@ -1,0 +1,126 @@
+{% extends 'base.html' %} <!--Bootstrap elérhetöségek !-->
+{% include 'header.html' %} <!--Header beillesztése !-->
+
+{% block title %} Home {% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="jumbotron p-3">
+                <!--Modalt ugy nyitunk meg, hogy beleirjuk a data-targetet, ami a modal id-ja. !-->
+                <h2>Munkavállalok menedzselése<button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Uj hozzáadása</button></h2>
+                <table class="table table-hover table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nev</th>
+                    <th>Email</th>
+                    <th>Telefonszám</th>
+                    <th>Pozicio</th>
+                    <th>Muveletek</th>
+                </tr>
+                    <!--Ez lényegében egy for ciklus ami lehivja az adatoka z adatbázisbol. !-->
+                    {% for row in employees %}
+                    <tr>
+                        <td>{{row.id}}</td>
+                        <td>{{row.name}}</td>
+                        <td>{{row.email}}</td>
+                        <td>{{row.phone}}</td>
+                        <td>{{row.position}}</td>
+                        <td>
+                            <!--Emlitettem hogy a törléshez, szerkesztéshez szükség van az ID-ra, azt itt kapja meg a for cikluson belül minden eggyes elem. !-->
+                            <a href="/update/{{row.id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Szerkesztés</a>
+                            <a href="/delete/{{row.id}}" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure to delete?')">Törlés</a>
+                        </td>
+                    </tr>
+                    <div class="modal" id="modaledit{{row.id}}" tabindex="1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Dologozo szerkesztese</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Dolgozo szerkesztese</p>
+                                    <!--Action: Az url amit beállitottunk az update URL-re., method: GET, POST, PUT, DELETE, ez esetben POST !-->
+                                    <form action="{{url_for('update')}}" method="post">
+                                        <div class="form-group">
+                                            <input type="hidden" value="{{row.id}}" name="id" id="id">
+                                            <label>Nev:</label>
+                                            <input type="text" class="form-control" name="name" value="{{row.name}}" required="1">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Email:</label>
+                                            <input type="text" class="form-control" name="email" value="{{row.email}}" required="1">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Pozicio:</label>
+                                            <input type="text" class="form-control" name="position" value="{{row.position}}" required="1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Telefon:</label>
+                                            <input type="text" class="form-control" name="phone" value="{{row.phone}}" required="1">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Szerkesztes</button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Bezárás</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+               </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="mymodal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title">Dolgozo hozzáadása</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+      <div class="modal-body">
+          <p>Dolgozo hozzáadás.</p>
+          <form action="{{url_for('insert')}}" method="POST">
+
+              <div class="form-group">
+                  <label>Nev:</label>
+                  <input type="text" class="form-control" name="name" required="1">
+              </div>
+
+              <div class="form-group">
+                  <label>Pozicio:</label>
+                  <input type="text" class="form-control" name="position" required="1">
+              </div>
+
+              <div class="form-group">
+                  <label>Email:</label>
+                  <input type="text" class="form-control" name="email" required="1">
+              </div>
+
+              <div class="form-group">
+                  <label>Phone:</label>
+                  <input type="text" class="form-control" name="phone" required="1">
+              </div>
+              <button type="submit" class="btn btn-primary">Hozzáadás</button>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bezárás</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{% endblock %}
